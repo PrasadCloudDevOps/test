@@ -1,0 +1,42 @@
+jobs:
+- job: Job_1
+  displayName: Agent job 1
+  pool:
+    vmImage: windows-latest
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: CmdLine@2
+    displayName: Command Line Script
+    inputs:
+      script: >
+        cd $(Build.SourcesDirectory)
+
+        mvn clean
+
+        mvn package
+
+        copy $(Build.SourcesDirectory)\target\abc.war $(Build.ArtifactStagingDirectory)
+  - task: CmdLine@2
+    displayName: Command Line Script copy
+    inputs:
+      script: >
+        cd $(Build.SourcesDirectory)
+
+        mvn package
+
+        copy $(Build.SourcesDirectory)\target\abc.war $(Build.ArtifactStagingDirectory)
+  - task: CmdLine@2
+    displayName: Command Line Script copy copy
+    enabled: False
+    inputs:
+      script: >
+        cd $(Build.SourcesDirectory)\target
+
+        copy $(Build.SourcesDirectory)\abc.war $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+    inputs:
+      PathtoPublish: $(Build.SourcesDirectory)\target\abc.war
+...
